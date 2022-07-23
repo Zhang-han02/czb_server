@@ -150,24 +150,27 @@ public class WeighServiceImpl implements WeighService {
         List weighList = new ArrayList<>();
         List<Map<String,Object>> prodTop = weighRepository.prodTop();
         //根据年度最高的产品循环查询每个产品近12月的数量
-        for (Map prod : prodTop) {
-            List months = new ArrayList<>();
-            List weighs = new ArrayList<>();
-            nameList.add(prod.get("name"));
-            List<Map<String,Object>> prodList = weighRepository.prodTopThree( prod.get("id").toString());
-            //将每个产品每月的数量放在list
-            for (Map mapCon : prodList) {
-                months.add(mapCon.get("month"));
-                weighs.add(mapCon.get("weigh"));
+        try {
+            for (Map prod : prodTop) {
+                List months = new ArrayList<>();
+                List weighs = new ArrayList<>();
+                nameList.add(prod.get("name"));
+                List<Map<String,Object>> prodList = weighRepository.prodTopThree( prod.get("id").toString());
+                //将每个产品每月的数量放在list
+                for (Map mapCon : prodList) {
+                    months.add(mapCon.get("month"));
+                    weighs.add(mapCon.get("weigh"));
+                }
+                monthList.add(months);
+                weighList.add(weighs);
+                content.put("name",nameList);
+                content.put("month",monthList);
+                content.put("weigh",weighList);
             }
-            monthList.add(months);
-            weighList.add(weighs);
-            content.put("name",nameList);
-            content.put("month",monthList);
-            content.put("weigh",weighList);
+            return content;
+        } catch (Exception e){
+            throw new RuntimeException("查询年度走势图TOP3失败");
         }
-         return content;
-
     }
 
     @Override
